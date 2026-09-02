@@ -1,0 +1,17 @@
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# CS61A OK 测试框架产生的本地状态文件
+.ok_consent
+.ok_disabled
+.ok_history
+.ok_storage
+
+# 操作系统产生的文件
+.DS_Store
+Thumbs.db
+
+# VS Code 本地配置
+.vscode/
