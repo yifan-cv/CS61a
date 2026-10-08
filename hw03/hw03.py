@@ -115,17 +115,6 @@ def next_smaller_dollar(bill):
     elif bill == 5:
         return 1
     
-def helper(sum_needed, bill):
-    if sum_needed == 0:
-        return 1
-    elif sum_needed < 0:
-        return 0
-
-    if bill == 1:
-        return 1
-    
-    return helper(sum_needed - bill, bill) + helper(sum_needed, next_smaller_dollar(bill))
-
 def count_dollars(sum_needed):
     """Return the number of ways to make change.
 
@@ -147,6 +136,15 @@ def count_dollars(sum_needed):
     True
     """
     "*** YOUR CODE HERE ***"
+    def helper(sum_needed, bill):
+        if sum_needed == 0:
+            return 1
+        elif sum_needed < 0:
+            return 0
+        elif bill == 1:
+            return 1
+        
+        return helper(sum_needed-bill, bill) + helper(sum_needed, next_smaller_dollar(bill))
     return helper(sum_needed, 100)
 
 
@@ -209,25 +207,18 @@ def knapsack(weights, values, c):
     >>> knapsack(w, v, 6)
     6
     """
-    def helper(index, remaining):
-        if index == len(weights):
-            return 0
+    #已经装不下东西了
+    if c == 0:  
+        return 0
 
-        if weights[index] > remaining:
-            return helper(index + 1, remaining)
+    #没物品偷了
+    if weights == []:
+        return 0
 
-        take = values[index] + helper(
-            index + 1,
-            remaining - weights[index]
-        )
+    if weights[0] > c:
+        return knapsack(weights[1:], values[1:], c)
 
-        skip = helper(index + 1, remaining)
-
-        return max(take, skip)
-
-    return helper(0, c)
-
-
+    return max(values[0] + knapsack(weights[1:], values[1:], c-weights[0]), knapsack(weights[1:], values[1:], c))
 
 def print_move(origin, destination):
     """Print instructions to move a disk."""
@@ -273,6 +264,7 @@ def move_stack(num, start, end):
     move_stack(num - 1, mid, end)
 
 
+
 from operator import sub, mul
 
 def make_anonymous_factorial():
@@ -286,5 +278,15 @@ def make_anonymous_factorial():
     ...     ['Assign', 'AnnAssign', 'AugAssign', 'NamedExpr', 'FunctionDef', 'Recursion'])
     True
     """
-    return (lambda f: lambda n: f(f, n))(lambda f, n: 1 if n == 1 else mul(n, f(f, sub(n, 1))))
+    return (
+        lambda f:
+            lambda n:
+                1 if n == 1
+                else mul(n, f(f)(sub(n, 1)))
+    )(
+        lambda f:
+            lambda n:
+                1 if n == 1
+                else mul(n, f(f)(sub(n, 1)))
+    )
 

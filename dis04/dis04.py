@@ -16,11 +16,10 @@ def paths(m, n):
     def helper(x,y):
         if x == m and y == n:
             return 1
-        elif x > m:
+        if x > m or y > n:
             return 0
-        elif y > n:
-            return 0
-        return helper(x+1, y) + helper(x, y+1)
+
+        return helper(x+1, y) + helper(x,y+1)
     return helper(1,1)
 
 
@@ -36,11 +35,11 @@ def max_product(s):
     1
     """
     "*** YOUR CODE HERE ***"
-    def helper(s):
-        if s == []:
+    def helper(x):
+        if x == []:
             return 1
-        
-        return max(s[-1] * helper(s[:-2]),helper(s[:-1]))  #子问题返回后，上一层继续拿这个数字返回
+
+        return max(x[-1] * helper(x[:-2]) , helper(x[:-1]))
     return helper(s)
 
 #Q3: Sum Fun
@@ -59,35 +58,24 @@ def sums(n, m):
     >>> sums(6, 3)
     [[1, 2, 1, 2], [1, 2, 3], [1, 3, 2], [2, 1, 2, 1], [2, 1, 3], [2, 3, 1], [3, 1, 2], [3, 2, 1]]
     """
-    def prepend(k, lists):
-        if lists == []:
-            return []
-        return [[k] + lists[0]] + prepend(k, lists[1:])
+    if n < 0:
+        return []
+    if n == 0:
+        return [[]]
 
-    def helper(total, previous, k):
-        if total == 0:
-            return [[]]
+    result = []
 
-        if k > m:
-            return []
+    for k in range(1,m+1):
+        rests = sums(n-k, m)
 
-        # 不选择 k，继续尝试下一个候选
-        skip = helper(total, previous, k + 1)
+        for rest in rests:
+            if rest == [] or rest[0] != k:
+                result.append([k] + rest)
 
-        # k 太大，或者和上一个数字相同，不能选
-        if k > total or k == previous:
-            return skip
-
-        # 选择 k
-        rest = helper(total - k, k, 1)
-        take = prepend(k, rest)
-
-        return take + skip
-
-    return helper(n, 0, 1)
-
+    return result
 
 #Q4: A Perfect Question
+import math
 def fit(total, n):
     """Return whether there are n positive perfect squares that sums to total.
 
@@ -98,24 +86,17 @@ def fit(total, n):
     >>> [fit(32, 2), fit(32, 3), fit(32, 4), fit(32, 5)] # 2*(4*4), 3*(1*1)+2*2+5*5
     [True, False, False, True]
     """
-    def helper(total, n, k):
+    def helper(total, k, n):
+
         if total == 0 and n == 0:
             return True
 
-        if total <= 0 or n == 0:
+        if total < 0 or n <= 0 or k == 0:
             return False
-
-        if total < k * k:
-            return False
-
-        return (
-            helper(total - k * k, n - 1, k)
-            or
-            helper(total, n, k + 1)
-        )
-
-    return helper(total, n, 1)
+        
+        return helper(total-k*k, k, n-1) or helper(total, k-1, n)
+    return helper(total ,math.isqrt(total) ,n)
 
 
 
-       
+                   
