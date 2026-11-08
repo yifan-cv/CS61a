@@ -109,6 +109,7 @@ def squares(total, k):
 
     if k * k > total:
         return
+        
     if k * k == total:
         yield [k * k]
 
